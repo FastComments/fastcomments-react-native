@@ -1,0 +1,1 @@
+export { FastCommentsCommentWidget } from './fastcomments';
