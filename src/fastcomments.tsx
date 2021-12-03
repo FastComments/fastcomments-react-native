@@ -1,7 +1,12 @@
 import React, {useState} from 'react';
 import WebView from 'react-native-webview';
+import {FastCommentsCommentWidgetConfig} from "fastcomments-typescript";
 
-export default function FastCommentsWidget({config}) {
+export interface FastCommentsWidgetParameters {
+  config: FastCommentsCommentWidgetConfig
+}
+
+export function FastCommentsCommentWidget({config} : FastCommentsWidgetParameters) {
     if (config.urlId === null || config.urlId === undefined) {
         throw new Error('FastComments Error: A "urlId" is required! This should be a "urlId" property on the config object, that points to a bucket where comments will be stored and render from.');
     }
@@ -14,11 +19,14 @@ export default function FastCommentsWidget({config}) {
 
     let lastHeight = 0;
 
-    const configFunctions = {};
+    const configFunctions: Record<string, Function> = {};
 
     for (const key in config) {
+        // @ts-ignore
         if (typeof config[key] === 'function') {
+            // @ts-ignore
             configFunctions[key] = config[key];
+            // @ts-ignore
             delete config[key];
         }
     }
@@ -26,20 +34,23 @@ export default function FastCommentsWidget({config}) {
     if (config.sso) {
         if (config.sso.loginCallback) {
             configFunctions.loginCallback = config.sso.loginCallback;
+            // @ts-ignore
             config.sso.loginCallback = true;
         }
         if (config.sso.logoutCallback) {
             configFunctions.logoutCallback = config.sso.logoutCallback;
+            // @ts-ignore
             config.sso.logoutCallback = true;
         }
     }
 
     config = JSON.parse(JSON.stringify(config)); // un-freeze
+    // @ts-ignore
     config.instanceId = Math.random() + '.' + Date.now();
+    // @ts-ignore
     const host = config.apiHost ? config.apiHost : 'https://fastcomments.com';
 
-    function updateHeight(value) {
-        console.log('Setting height to ', value);
+    function updateHeight(value: number) {
         if (
             // Always handle the widget growing.
             value > lastHeight
@@ -53,7 +64,7 @@ export default function FastCommentsWidget({config}) {
         }
     }
 
-    function eventHandler(e) {
+    function eventHandler(e: any) {
         // if (!e.data || e.origin !== host) {
         //     return;
         // }
@@ -62,6 +73,7 @@ export default function FastCommentsWidget({config}) {
         try {
             const data = JSON.parse(e.nativeEvent.data);
 
+            // @ts-ignore
             if (data.instanceId !== config.instanceId) {
                 return;
             }
@@ -73,8 +85,10 @@ export default function FastCommentsWidget({config}) {
             } else if (data.type === 'redirect') {
                 configFunctions.openURL && configFunctions.openURL(data.url);
             } else if (data.type === 'login') {
+                // @ts-ignore
                 configFunctions.loginCallback && configFunctions.loginCallback(config.instanceId);
             } else if (data.type === 'logout') {
+                // @ts-ignore
                 configFunctions.logoutCallback && configFunctions.logoutCallback(config.instanceId);
             } else if (data.type === 'reply-success') {
                 configFunctions.onReplySuccess && configFunctions.onReplySuccess(data.comment);
@@ -92,28 +106,33 @@ export default function FastCommentsWidget({config}) {
                 configFunctions.onCommentsRendered && configFunctions.onCommentsRendered(data.comments);
             }
         } catch (err) {
-            if (config.apiHost) { // only log errors during testing
+            // @ts-ignore
+          if (config.apiHost) { // only log errors during testing
                 console.error(e, err);
             }
         }
     }
 
     for (const key in config) {
-        const configValue = config[key];
+        // @ts-ignore
+      const configValue = config[key];
         if (configValue === undefined) {
+           // @ts-ignore
             delete config[key];
         } else if (typeof configValue === 'number') { // example: startingPage
+           // @ts-ignore
             config[key] = configValue;
         } else if (typeof configValue !== 'object') {
+           // @ts-ignore
             config[key] = encodeURIComponent(configValue);
         } else {
+           // @ts-ignore
             config[key] = configValue;
         }
     }
 
     const uri = host + '/embed?config=' + encodeURIComponent(JSON.stringify(config)) + '&wId=comment-ui-v2';
 
-    console.log('Loading', uri);
     return (
         <WebView
             style={{height}}
