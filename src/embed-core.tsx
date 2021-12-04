@@ -6,7 +6,7 @@ export interface FastCommentsWidgetParameters {
   config: FastCommentsCommentWidgetConfig
 }
 
-export function FastCommentsCommentWidget({config} : FastCommentsWidgetParameters) {
+export function FastCommentsEmbedCore({config} : FastCommentsWidgetParameters, widgetId: string) {
     if (config.urlId === null || config.urlId === undefined) {
         throw new Error('FastComments Error: A "urlId" is required! This should be a "urlId" property on the config object, that points to a bucket where comments will be stored and render from.');
     }
@@ -65,11 +65,6 @@ export function FastCommentsCommentWidget({config} : FastCommentsWidgetParameter
     }
 
     function eventHandler(e: any) {
-        // if (!e.data || e.origin !== host) {
-        //     return;
-        // }
-
-        console.log('Got Message', e.nativeEvent.data);
         try {
             const data = JSON.parse(e.nativeEvent.data);
 
@@ -131,7 +126,7 @@ export function FastCommentsCommentWidget({config} : FastCommentsWidgetParameter
         }
     }
 
-    const uri = host + '/embed?config=' + encodeURIComponent(JSON.stringify(config)) + '&wId=comment-ui-v2';
+    const uri = host + '/embed?config=' + encodeURIComponent(JSON.stringify(config)) + '&wId=' + widgetId;
 
     return (
         <WebView
