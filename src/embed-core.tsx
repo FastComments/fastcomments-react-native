@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
 import WebView from 'react-native-webview';
 import {FastCommentsCommentWidgetConfig} from "fastcomments-typescript";
+import {ColorValue} from 'react-native';
 
 export interface FastCommentsWidgetParameters {
-  config: FastCommentsCommentWidgetConfig
+  config: FastCommentsCommentWidgetConfig;
+  backgroundColor?: ColorValue | undefined;
 }
 
-export function FastCommentsEmbedCore({config} : FastCommentsWidgetParameters, widgetId: string) {
+export function FastCommentsEmbedCore({config, backgroundColor} : FastCommentsWidgetParameters, widgetId: string) {
     if (config.urlId === null || config.urlId === undefined) {
         throw new Error('FastComments Error: A "urlId" is required! This should be a "urlId" property on the config object, that points to a bucket where comments will be stored and render from.');
     }
@@ -130,7 +132,7 @@ export function FastCommentsEmbedCore({config} : FastCommentsWidgetParameters, w
 
     return (
         <WebView
-            style={{height}}
+            style={{height, backgroundColor}}
             startInLoadingState={true}
             scalesPageToFit={true}
             source={{uri}}
