@@ -1,14 +1,17 @@
 import React, {useState} from 'react';
 import WebView from 'react-native-webview';
-import {FastCommentsCommentWidgetConfig} from "fastcomments-typescript";
-import {ColorValue} from 'react-native';
+import {FastCommentsCommentWidgetConfig} from 'fastcomments-typescript';
+import {ActivityIndicator, ColorValue} from 'react-native';
+import {WebViewErrorEvent, WebViewNavigationEvent} from 'react-native-webview/lib/WebViewTypes';
 
 export interface FastCommentsWidgetParameters {
   config: FastCommentsCommentWidgetConfig;
   backgroundColor?: ColorValue | undefined;
+  onLoad?: (event: WebViewNavigationEvent) => void;
+  onError?: (error: WebViewErrorEvent) => void;
 }
 
-export function FastCommentsEmbedCore({config, backgroundColor} : FastCommentsWidgetParameters, widgetId: string) {
+export function FastCommentsEmbedCore({config, backgroundColor, onLoad, onError} : FastCommentsWidgetParameters, widgetId: string) {
     if (config.urlId === null || config.urlId === undefined) {
         throw new Error('FastComments Error: A "urlId" is required! This should be a "urlId" property on the config object, that points to a bucket where comments will be stored and render from.');
     }
@@ -132,14 +135,15 @@ export function FastCommentsEmbedCore({config, backgroundColor} : FastCommentsWi
 
     return (
         <WebView
-            style={{height, backgroundColor}}
+            style={{ height, backgroundColor }}
             startInLoadingState={true}
+            renderLoading={() => <ActivityIndicator size="small" />}
             scalesPageToFit={true}
             source={{uri}}
             domStorageEnabled={true}
             javaScriptEnabled={true}
             onMessage={event => eventHandler(event)}
-            onError={error => console.log('FastComments WebView failed to load', error)}
-            onLoad={() => console.log('Rendered')}/>
+            onError={onError}
+            onLoad={onLoad}/>
     );
 }
