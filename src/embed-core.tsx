@@ -23,6 +23,7 @@ export function FastCommentsEmbedCore({config, backgroundColor, onLoad, onError}
     const [height, setHeight] = useState(500);
 
     let lastHeight = 0;
+    let webview: WebView | null;
 
     const configFunctions: Record<string, Function> = {};
 
@@ -104,6 +105,13 @@ export function FastCommentsEmbedCore({config, backgroundColor, onLoad, onError}
                 configFunctions.onAuthenticationChange && configFunctions.onAuthenticationChange(data.changeType, data.data);
             } else if (data.type === 'on-comments-rendered') {
                 configFunctions.onCommentsRendered && configFunctions.onCommentsRendered(data.comments);
+            } else if (data.type === 'open-profile') {
+                configFunctions.onOpenProfile && configFunctions.onOpenProfile(data.userId);
+                webview && webview.postMessage(JSON.stringify({
+                    type: 'profile-loaded',
+                      // @ts-ignore
+                    instanceId: config.instanceId
+                }));
             }
         } catch (err) {
             // @ts-ignore
@@ -135,6 +143,9 @@ export function FastCommentsEmbedCore({config, backgroundColor, onLoad, onError}
 
     return (
         <WebView
+            ref={ref => {
+              webview = ref;
+            }}
             style={{ height, backgroundColor }}
             startInLoadingState={true}
             renderLoading={() => <ActivityIndicator size="small" />}
