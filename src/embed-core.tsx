@@ -106,12 +106,22 @@ export function FastCommentsEmbedCore({config, backgroundColor, onLoad, onError}
             } else if (data.type === 'on-comments-rendered') {
                 configFunctions.onCommentsRendered && configFunctions.onCommentsRendered(data.comments);
             } else if (data.type === 'open-profile') {
-                configFunctions.onOpenProfile && configFunctions.onOpenProfile(data.userId);
-                webview && webview.postMessage(JSON.stringify({
-                    type: 'profile-loaded',
-                      // @ts-ignore
-                    instanceId: config.instanceId
-                }));
+                if (configFunctions.onOpenProfile) {
+                  if(configFunctions.onOpenProfile(data.userId) && webview) {
+                    const js = `
+                      (function () {
+                          window.dispatchEvent(new MessageEvent('message', {
+                              data: '${JSON.stringify({
+                                  type: 'profile-loaded',
+                                    // @ts-ignore
+                                  instanceId: config.instanceId
+                              })}'
+                          }));
+                      })();
+                    `;
+                    webview.injectJavaScript(js);
+                  }
+                }
             }
         } catch (err) {
             // @ts-ignore

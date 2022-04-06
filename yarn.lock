@@ -4184,10 +4184,10 @@
   "resolved" "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz"
   "version" "2.0.6"
 
-"fastcomments-typescript@^1.5.13":
-  "integrity" "sha512-tROd2OsTof3iH41Z7CeE6C0Sh7iGnLkPHNeHwtCcuw9hA1hVlAOs/CnhCdIv7VHbFMlwHwvMq1EM9SMMpUKOQw=="
-  "resolved" "https://registry.npmjs.org/fastcomments-typescript/-/fastcomments-typescript-1.5.13.tgz"
-  "version" "1.5.13"
+"fastcomments-typescript@^1.6.14":
+  "integrity" "sha512-J74NcXi47AJMXR/ORnP8Bj/ui53KTcHS4zx/m3kM/0nrFiueza7vLG/y75NlLNmanHitlOkrdyvIo8mONhpj8w=="
+  "resolved" "https://registry.npmjs.org/fastcomments-typescript/-/fastcomments-typescript-1.6.14.tgz"
+  "version" "1.6.14"
 
 "fastq@^1.6.0":
   "integrity" "sha512-YpkpUnK8od0o1hmeSc7UUs/eB/vIPWJYjKck2QKIzAf71Vm1AAQ3EbuZB3g2JIy+pg+ERD0vqI79KyZiB2e2Nw=="
