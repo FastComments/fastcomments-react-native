@@ -19,10 +19,13 @@ import { FastCommentsCommentWidget } from 'fastcomments-react-native';
 
   const myTenantId = 'demo'; // Your tenant id. Can be fetched from https://fastcomments.com/auth/my-account/api-secret
   const myAppPageId = 'native-test'; // the ID or URL of the comment thread in your app.
-  const config = {
+  const [config, setConfig] = useState({
     tenantId: myTenantId,
     urlId: myAppPageId
-  };
+  });
+
+  // by calling setConfig(), we can do things like change the current page, or the currently logged in user
+  // See example/src/App.tsx
 
   return (
       <FastCommentsCommentWidget config={config}/>
