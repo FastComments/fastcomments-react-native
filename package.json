@@ -1,6 +1,6 @@
 {
   "name": "fastcomments-react-native",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "description": "React Native FastComments Components",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
