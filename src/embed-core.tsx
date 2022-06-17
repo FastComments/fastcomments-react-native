@@ -139,7 +139,7 @@ export function FastCommentsEmbedCore(props: FastCommentsWidgetParameters, widge
     // @ts-ignore
     config.instanceId = Math.random() + '.' + Date.now();
     // @ts-ignore
-    const host = config.apiHost ? config.apiHost : 'https://fastcomments.com';
+    const host = config.apiHost ? config.apiHost : config.region === 'eu' ? 'https://eu.fastcomments.com' : 'https://fastcomments.com';
 
     for (const key in config) {
       // @ts-ignore

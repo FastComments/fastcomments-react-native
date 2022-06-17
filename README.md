@@ -62,6 +62,11 @@ You can find examples for various backends, here: https://github.com/FastComment
 
 `fastcomments-react-native` requires `react-native-webview`. As such, you should follow the installation steps for `react-native-webview`.
 
+### Account Region (ATTENTION: EU Customers)
+
+If your account is located in the EU, set `region = 'eu'` in the widget configuration.
+Otherwise, you do not have to define `region`.
+
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
