@@ -4236,10 +4236,10 @@
   "resolved" "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz"
   "version" "2.0.6"
 
-"fastcomments-typescript@^1.6.21":
-  "integrity" "sha512-khay4/pFdLTlNOAufuMQKY3vhweAdq+Nv/OhfwUAim2Um2RjnrmaJVAlRSDD/YegR77/cVYRngbV+Hf65gTmig=="
-  "resolved" "https://registry.npmjs.org/fastcomments-typescript/-/fastcomments-typescript-1.6.21.tgz"
-  "version" "1.6.21"
+"fastcomments-typescript@^2.0.0":
+  "integrity" "sha512-yzglFLYG3FdGxA5HtYH6FbQBgcxXjmOKcyUkvOWPhCCCpY52RGngbcTEaTgG4ojs6CvIoKyeEfYSGHsxmKbE4g=="
+  "resolved" "https://registry.npmjs.org/fastcomments-typescript/-/fastcomments-typescript-2.0.0.tgz"
+  "version" "2.0.0"
 
 "fastq@^1.6.0":
   "integrity" "sha512-YpkpUnK8od0o1hmeSc7UUs/eB/vIPWJYjKck2QKIzAf71Vm1AAQ3EbuZB3g2JIy+pg+ERD0vqI79KyZiB2e2Nw=="
