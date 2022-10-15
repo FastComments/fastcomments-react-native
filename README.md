@@ -1,12 +1,19 @@
 # fastcomments-react-native
 
-React Native FastComments Components
+FastComments React Native Wrapper
 
 ## Installation
 
 ```sh
-npm install fastcomments-react-native
+npm install fastcomments-react-native --save
 ```
+
+## Consider The Native SDK
+
+This library uses a webview around the VanillaJS library.
+
+FastComments now supports a completely native implementation of our client as part of [fastcomments-react-native-sdk](https://github.com/FastComments/fastcomments-react-native-sdk).
+If you want a completely native implementation you may want to look there.
 
 ## Usage - The Live Comment Widget
 
