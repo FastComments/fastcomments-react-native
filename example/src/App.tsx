@@ -1,15 +1,15 @@
 import * as React from 'react';
 
-import {FastCommentsCommentWidget} from '../../src/index';
-import {useEffect, useState} from "react";
+import { FastCommentsCommentWidget } from '../../src/index';
+import { useState } from 'react';
 
 export default function App() {
   const myTenantId = 'demo'; // Your tenant id. Can be fetched from https://fastcomments.com/auth/my-account/api-secret
   const myAppPageId = 'native-test'; // the ID or URL of the comment thread in your app.
 
-  const [config, setConfig] = useState({
+  const [config] = useState({
     tenantId: myTenantId,
-    urlId: myAppPageId
+    urlId: myAppPageId,
   });
 
   // Uncomment this to test changing pages without reloading the whole widget.
@@ -23,7 +23,5 @@ export default function App() {
   //   }, 2000);
   // }, []);
 
-  return (
-    <FastCommentsCommentWidget config={config}/>
-  );
+  return <FastCommentsCommentWidget config={config} />;
 }
