@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import {FastCommentsCommentWidget} from '../../src/index';
+import { FastCommentsCommentWidget } from '../../src/index';
 
 export default function DarkModeApp() {
   const myTenantId = 'demo'; // Your tenant id. Can be fetched from https://fastcomments.com/auth/my-account/api-secret
@@ -11,7 +11,5 @@ export default function DarkModeApp() {
     hasDarkBackground: true,
   };
 
-  return (
-      <FastCommentsCommentWidget config={config} backgroundColor="#000"/>
-  );
+  return <FastCommentsCommentWidget config={config} backgroundColor="#000" />;
 }

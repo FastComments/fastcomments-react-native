@@ -1,10 +1,12 @@
-import {FastCommentsCommentWidgetConfig} from 'fastcomments-typescript'
-import {FastCommentsEmbedCore} from './embed-core'
+import { FastCommentsCommentWidgetConfig } from 'fastcomments-typescript';
+import { FastCommentsEmbedCore } from './embed-core';
 
 export interface FastCommentsWidgetParameters {
-  config: FastCommentsCommentWidgetConfig
+  config: FastCommentsCommentWidgetConfig;
 }
 
-export function FastCommentsLiveChatWidget(params : FastCommentsWidgetParameters) {
-    return FastCommentsEmbedCore(params, 'live-chat');
+export function FastCommentsLiveChatWidget(
+  params: FastCommentsWidgetParameters
+) {
+  return FastCommentsEmbedCore(params, 'live-chat');
 }
