@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import WebView from 'react-native-webview';
-import { FastCommentsCommentWidgetConfig } from 'fastcomments-typescript';
+import type {
+  FastCommentsSSO,
+  FastCommentsCommentWidgetConfig,
+} from 'fastcomments-typescript';
 import { ActivityIndicator, ColorValue } from 'react-native';
 import {
   WebViewErrorEvent,
@@ -24,26 +27,34 @@ export function FastCommentsEmbedCore(
 
   let lastHeight = 0;
   let webview: WebView | null;
-
-  const configFunctions: Record<string, Function> = {};
+  const configFunctions: Pick<
+    FastCommentsCommentWidgetConfig,
+    | 'commentCountUpdated'
+    | 'onReplySuccess'
+    | 'onVoteSuccess'
+    | 'onInit'
+    | 'onRender'
+    | 'onImageClicked'
+    | 'onAuthenticationChange'
+    | 'onCommentsRendered'
+  > & {
+    loginCallback?: FastCommentsSSO['loginCallback'];
+    logoutCallback?: FastCommentsSSO['logoutCallback'];
+  } = {};
   if (props.config.sso) {
     if (props.config.sso.loginCallback) {
       configFunctions.loginCallback = props.config.sso.loginCallback;
-      // @ts-ignore
-      props.config.sso.loginCallback = true;
+      (props.config.sso.loginCallback as unknown as boolean) = true;
     }
     if (props.config.sso.logoutCallback) {
       configFunctions.logoutCallback = props.config.sso.logoutCallback;
-      // @ts-ignore
-      config.sso.logoutCallback = true;
+      (props.config.sso.logoutCallback as unknown as boolean) = true;
     }
   }
 
   for (const key in props.config) {
-    // @ts-ignore
-    if (typeof props.config[key] === 'function') {
-      // @ts-ignore
-      configFunctions[key] = props.config[key];
+    if (typeof (props.config as any)[key] === 'function') {
+      (configFunctions as any)[key] = (props.config as any)[key];
     }
   }
 
@@ -65,8 +76,7 @@ export function FastCommentsEmbedCore(
     try {
       const data = JSON.parse(e.nativeEvent.data);
 
-      // @ts-ignore
-      if (data.instanceId !== config.instanceId) {
+      if (data.instanceId !== props.config.instanceId) {
         return;
       }
 
@@ -76,15 +86,15 @@ export function FastCommentsEmbedCore(
         configFunctions.commentCountUpdated &&
           configFunctions.commentCountUpdated(data.count);
       } else if (data.type === 'redirect') {
+        // TODO add openURL config option
+        // @ts-ignore
         configFunctions.openURL && configFunctions.openURL(data.url);
       } else if (data.type === 'login') {
-        // @ts-ignore
-        // eslint-disable-next-line prettier/prettier
-        configFunctions.loginCallback && configFunctions.loginCallback(props.config.instanceId);
+        configFunctions.loginCallback &&
+          configFunctions.loginCallback(props.config.instanceId!);
       } else if (data.type === 'logout') {
-        // @ts-ignore
         // eslint-disable-next-line prettier/prettier
-        configFunctions.logoutCallback && configFunctions.logoutCallback(props.config.instanceId);
+        configFunctions.logoutCallback && configFunctions.logoutCallback(props.config.instanceId!);
       } else if (data.type === 'reply-success') {
         configFunctions.onReplySuccess &&
           configFunctions.onReplySuccess(data.comment);
@@ -110,15 +120,15 @@ export function FastCommentsEmbedCore(
         configFunctions.onCommentsRendered &&
           configFunctions.onCommentsRendered(data.comments);
       } else if (data.type === 'open-profile') {
-        if (configFunctions.onOpenProfile) {
-          if (configFunctions.onOpenProfile(data.userId) && webview) {
+        // TODO add onOpenProfile to config
+        if ((configFunctions as any).onOpenProfile) {
+          if ((configFunctions as any).onOpenProfile(data.userId) && webview) {
             const js = `
                       (function () {
                           window.dispatchEvent(new MessageEvent('message', {
                               data: '${JSON.stringify({
                                 type: 'profile-loaded',
-                                // @ts-ignore
-                                instanceId: config.instanceId,
+                                instanceId: props.config.instanceId,
                               })}'
                           }));
                       })();
@@ -128,7 +138,6 @@ export function FastCommentsEmbedCore(
         }
       }
     } catch (err) {
-      // @ts-ignore
       if (props.config.apiHost) {
         // only log errors during testing
         console.error(e, err);
@@ -137,57 +146,47 @@ export function FastCommentsEmbedCore(
   }
 
   useEffect(() => {
-    let config = { ...props.config };
+    const config = props.config;
     if (config.urlId === null || config.urlId === undefined) {
       throw new Error(
         'FastComments Error: A "urlId" is required! This should be a "urlId" property on the config object, that points to a bucket where comments will be stored and render from.'
       );
     }
-
-    if (typeof config.urlId === 'number') {
-      config.urlId = '' + config.urlId;
+    if (!config.instanceId) {
+      (config as any).instanceId = Math.random() + '.' + Date.now();
     }
 
-    for (const key in props.config) {
-      // @ts-ignore
-      if (typeof props.config[key] === 'function') {
-        // @ts-ignore
-        delete props.config[key];
+    const deRefConfig = JSON.parse(JSON.stringify(config)); // un-freeze and de-ref
+
+    for (const key in deRefConfig) {
+      if (typeof (deRefConfig as any)[key] === 'function') {
+        delete (deRefConfig as any)[key];
       }
     }
 
-    config = JSON.parse(JSON.stringify(config)); // un-freeze
-    // @ts-ignore
-    config.instanceId = Math.random() + '.' + Date.now();
-    // @ts-ignore
-    const host = config.apiHost
-      ? config.apiHost
-      : config.region === 'eu'
+    const host = deRefConfig.apiHost
+      ? deRefConfig.apiHost
+      : deRefConfig.region === 'eu'
       ? 'https://eu.fastcomments.com'
       : 'https://fastcomments.com';
 
-    for (const key in config) {
-      // @ts-ignore
-      const configValue = config[key];
+    for (const key in deRefConfig) {
+      const configValue = (deRefConfig as any)[key];
       if (configValue === undefined) {
-        // @ts-ignore
-        delete config[key];
+        delete (deRefConfig as any)[key];
       } else if (typeof configValue === 'number') {
         // example: startingPage
-        // @ts-ignore
-        config[key] = configValue;
+        (deRefConfig as any)[key] = configValue;
       } else if (typeof configValue !== 'object') {
-        // @ts-ignore
-        config[key] = encodeURIComponent(configValue);
+        (deRefConfig as any)[key] = encodeURIComponent(configValue);
       } else {
-        // @ts-ignore
-        config[key] = configValue;
+        (deRefConfig as any)[key] = configValue;
       }
     }
     setURI(
       host +
         '/embed?config=' +
-        encodeURIComponent(JSON.stringify(config)) +
+        encodeURIComponent(JSON.stringify(deRefConfig)) +
         '&wId=' +
         widgetId
     );
