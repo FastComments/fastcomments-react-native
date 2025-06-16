@@ -4,10 +4,11 @@ import type {
   FastCommentsSSO,
   FastCommentsCommentWidgetConfig,
 } from 'fastcomments-typescript';
-import { ActivityIndicator, ColorValue } from 'react-native';
+import { ActivityIndicator, ColorValue, Linking } from 'react-native';
 import {
   WebViewErrorEvent,
   WebViewNavigationEvent,
+  WebViewNavigation,
 } from 'react-native-webview/lib/WebViewTypes';
 
 export interface FastCommentsWidgetParameters {
@@ -15,6 +16,7 @@ export interface FastCommentsWidgetParameters {
   backgroundColor?: ColorValue | undefined;
   onLoad?: (event: WebViewNavigationEvent) => void;
   onError?: (error: WebViewErrorEvent) => void;
+  openURL?: (url: string) => boolean;
 }
 
 export function FastCommentsEmbedCore(
@@ -72,6 +74,28 @@ export function FastCommentsEmbedCore(
     }
   }
 
+  function shouldStartLoadWithRequest(request: WebViewNavigation): boolean {
+    const requestUrl = request.url;
+    const currentUrl = uri;
+    
+    // Allow navigation within FastComments domains
+    if (requestUrl.includes('fastcomments.com') || 
+        requestUrl.includes('eu.fastcomments.com') ||
+        requestUrl === currentUrl) {
+      return true;
+    }
+    
+    // For external URLs, try to open in system browser
+    if (props.openURL) {
+      return !props.openURL(requestUrl);
+    } else {
+      Linking.openURL(requestUrl).catch(err => 
+        console.error('Failed to open URL:', err)
+      );
+      return false;
+    }
+  }
+
   function eventHandler(e: any) {
     try {
       const data = JSON.parse(e.nativeEvent.data);
@@ -86,9 +110,13 @@ export function FastCommentsEmbedCore(
         configFunctions.commentCountUpdated &&
           configFunctions.commentCountUpdated(data.count);
       } else if (data.type === 'redirect') {
-        // TODO add openURL config option
-        // @ts-ignore
-        configFunctions.openURL && configFunctions.openURL(data.url);
+        if (props.openURL) {
+          props.openURL(data.url);
+        } else {
+          Linking.openURL(data.url).catch(err => 
+            console.error('Failed to open URL:', err)
+          );
+        }
       } else if (data.type === 'login') {
         configFunctions.loginCallback &&
           configFunctions.loginCallback(props.config.instanceId!);
@@ -205,6 +233,7 @@ export function FastCommentsEmbedCore(
       domStorageEnabled={true}
       javaScriptEnabled={true}
       onMessage={(event) => eventHandler(event)}
+      onShouldStartLoadWithRequest={shouldStartLoadWithRequest}
       onError={props.onError}
       onLoad={props.onLoad}
     />
