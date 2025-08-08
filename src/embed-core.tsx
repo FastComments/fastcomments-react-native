@@ -232,6 +232,8 @@ export function FastCommentsEmbedCore(
       source={{ uri }}
       domStorageEnabled={true}
       javaScriptEnabled={true}
+      nestedScrollEnabled={true}
+      overScrollMode="never"
       onMessage={(event) => eventHandler(event)}
       onShouldStartLoadWithRequest={shouldStartLoadWithRequest}
       onError={props.onError}
