@@ -17,6 +17,7 @@ export interface FastCommentsWidgetParameters {
   onLoad?: (event: WebViewNavigationEvent) => void;
   onError?: (error: WebViewErrorEvent) => void;
   openURL?: (url: string) => boolean;
+  showsVerticalScrollIndicator?: boolean;
 }
 
 export function FastCommentsEmbedCore(
@@ -234,6 +235,7 @@ export function FastCommentsEmbedCore(
       javaScriptEnabled={true}
       nestedScrollEnabled={true}
       overScrollMode="never"
+      showsVerticalScrollIndicator={props.showsVerticalScrollIndicator}
       onMessage={(event) => eventHandler(event)}
       onShouldStartLoadWithRequest={shouldStartLoadWithRequest}
       onError={props.onError}

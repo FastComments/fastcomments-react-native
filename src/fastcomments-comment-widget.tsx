@@ -5,6 +5,7 @@ import { ColorValue } from 'react-native';
 export interface FastCommentsWidgetParameters {
   config: FastCommentsCommentWidgetConfig;
   backgroundColor?: ColorValue | undefined;
+  showsVerticalScrollIndicator?: boolean;
 }
 
 export function FastCommentsCommentWidget(
