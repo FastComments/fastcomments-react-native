@@ -2,14 +2,26 @@
 
 FastComments React Native Wrapper
 
+## Live Showcase
+
+To see every widget and flow running locally against the public `demo` tenant, clone the repo and run:
+
+```bash
+yarn bootstrap
+cd example
+yarn ios       # or: yarn android, yarn web
+```
+
+The showcase entry point is `example/src/ShowcaseApp.tsx` — a single app that exposes all widgets, themes, and flows.
+
+The `yarn web` target uses `react-native-web` + `react-native-web-webview` (which renders the WebView as an iframe). Useful for quick visual smoke tests in a browser; native-only WebView APIs like `injectJavaScript` and `onShouldStartLoadWithRequest` won't fully behave on web.
+
 ## Installation
 
 ```sh
-npm install react-native-webview@13.6.4 --save
+npm install react-native-webview --save
 npm install fastcomments-react-native --save
 ```
-
-Note: As of July 2024 it seems react-native-webview has a bug, so it's best to pin to `13.6.4` - don't use `^` to get the latest patch version.
 
 ## Consider The Native SDK
 
@@ -92,3 +104,7 @@ See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the 
 ## License
 
 MIT
+
+## Maintenance Status
+
+These components are wrappers around our core VanillaJS components. We can automatically update these components (fix bugs, add features) without publishing this library, so while it may not be published for a while that does not mean FastComments is not under active development! Feel free to check [our blog](https://blog.fastcomments.com/) for updates. Breaking API changes or features will never be shipped to the underlying core library without a version bump in this library.

@@ -1,32 +1,61 @@
 import * as React from 'react';
 
 import { FastCommentsCommentWidget } from '../../src/index';
-import { useState } from 'react';
-import type { FastCommentsCommentWidgetConfig } from 'fastcomments-typescript';
+import { View, StyleSheet } from 'react-native';
+import { useTheme } from './ShowcaseApp';
 
 export default function App() {
-  const myTenantId = 'demo'; // Your tenant id. Can be fetched from https://fastcomments.com/auth/my-account/api-secret
-  const myAppPageId = 'native-test'; // the ID or URL of the comment thread in your app.
-  const myAppPageUrl = 'https://example.com/external-page'; // you can optional set a url to an external page
-  const myAppPageTitle = 'Example Title'; // ... and you probably want a title for this content
+  const { isDark } = useTheme();
+  const FAST_COMMENTS_TENANT_ID = 'demo';
+  const urlId = 'native-test';
+  const url = 'https://example.com/external-page';
+  const now = Date.now();
 
-  const [config] = useState<FastCommentsCommentWidgetConfig>({
-    tenantId: myTenantId,
-    urlId: myAppPageId,
-    url: myAppPageUrl,
-    pageTitle: myAppPageTitle
-  });
+  // Simulate postData from customer's app
+  const postData = {
+    projectId: 'test-project-123',
+  };
 
-  // Uncomment this to test changing pages without reloading the whole widget.
-  // We could use this to change the logged in user, as well.
-  // useEffect(() => {
-  //   setTimeout(function () {
-  //     setConfig({
-  //       ...config,
-  //       urlId: 'new-page-id'
-  //     });
-  //   }, 2000);
-  // }, []);
+  const ssoConfig = {
+    timestamp: now,
+  };
 
-  return <FastCommentsCommentWidget config={config} />;
+  const widgetConfig = () => {
+    const baseConfig: any = {
+      tenantId: FAST_COMMENTS_TENANT_ID,
+      urlId: urlId || '',
+      url,
+      originalReferrer: 'Original Referrer',
+      sendEvents: true,
+      hasDarkBackground: isDark,
+    };
+
+    const mentionGroupIds =
+      postData && postData.projectId ? [postData.projectId] : undefined;
+
+    if (mentionGroupIds && mentionGroupIds.length > 0) {
+      baseConfig.mentionGroupIds = mentionGroupIds;
+    }
+
+    return baseConfig;
+  };
+
+  const widgetKey = `${urlId}::${ssoConfig.timestamp}::${isDark ? 'd' : 'l'}`;
+
+  return (
+    <View style={styles.container}>
+      <FastCommentsCommentWidget
+        key={widgetKey}
+        config={widgetConfig()}
+        backgroundColor="transparent"
+      />
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+});

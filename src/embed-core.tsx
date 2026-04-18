@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import WebView from 'react-native-webview';
 import type {
   FastCommentsSSO,
@@ -7,6 +7,7 @@ import type {
 import { ActivityIndicator, ColorValue, Linking } from 'react-native';
 import {
   WebViewErrorEvent,
+  WebViewMessageEvent,
   WebViewNavigationEvent,
   WebViewNavigation,
 } from 'react-native-webview/lib/WebViewTypes';
@@ -18,6 +19,12 @@ export interface FastCommentsWidgetParameters {
   onError?: (error: WebViewErrorEvent) => void;
   openURL?: (url: string) => boolean;
   showsVerticalScrollIndicator?: boolean;
+  renderLoading?: () => ReactElement;
+  renderError?: (
+    errorDomain: string | undefined,
+    errorCode: number,
+    errorDesc: string
+  ) => ReactElement;
 }
 
 export function FastCommentsEmbedCore(
@@ -25,25 +32,34 @@ export function FastCommentsEmbedCore(
   widgetId: string
 ) {
   const [uri, setURI] = useState('');
-
   const [height, setHeight] = useState(500);
+  const instanceIdRef = useRef<string>(
+    props.config.instanceId ?? Math.random() + '.' + Date.now()
+  );
 
   let lastHeight = 0;
   let webview: WebView | null;
-  const configFunctions: Pick<
+  const callbackKeys = [
+    'commentCountUpdated',
+    'onReplySuccess',
+    'onVoteSuccess',
+    'onInit',
+    'onRender',
+    'onImageClicked',
+    'onAuthenticationChange',
+    'onCommentsRendered',
+    'onOpenProfile',
+  ] as const;
+
+  type ConfigCallbacks = Pick<
     FastCommentsCommentWidgetConfig,
-    | 'commentCountUpdated'
-    | 'onReplySuccess'
-    | 'onVoteSuccess'
-    | 'onInit'
-    | 'onRender'
-    | 'onImageClicked'
-    | 'onAuthenticationChange'
-    | 'onCommentsRendered'
+    (typeof callbackKeys)[number]
   > & {
     loginCallback?: FastCommentsSSO['loginCallback'];
     logoutCallback?: FastCommentsSSO['logoutCallback'];
-  } = {};
+  };
+
+  const configFunctions: ConfigCallbacks = {};
   if (props.config.sso) {
     if (props.config.sso.loginCallback) {
       configFunctions.loginCallback = props.config.sso.loginCallback;
@@ -55,9 +71,11 @@ export function FastCommentsEmbedCore(
     }
   }
 
-  for (const key in props.config) {
-    if (typeof (props.config as any)[key] === 'function') {
-      (configFunctions as any)[key] = (props.config as any)[key];
+  for (const key of callbackKeys) {
+    const val = props.config[key];
+    if (typeof val === 'function') {
+      // Safe: key is constrained to callbackKeys which are all valid on both types
+      (configFunctions as Record<string, unknown>)[key] = val;
     }
   }
 
@@ -97,11 +115,11 @@ export function FastCommentsEmbedCore(
     }
   }
 
-  function eventHandler(e: any) {
+  function eventHandler(e: WebViewMessageEvent) {
     try {
       const data = JSON.parse(e.nativeEvent.data);
 
-      if (data.instanceId !== props.config.instanceId) {
+      if (data.instanceId !== instanceIdRef.current) {
         return;
       }
 
@@ -120,10 +138,10 @@ export function FastCommentsEmbedCore(
         }
       } else if (data.type === 'login') {
         configFunctions.loginCallback &&
-          configFunctions.loginCallback(props.config.instanceId!);
+          configFunctions.loginCallback(instanceIdRef.current);
       } else if (data.type === 'logout') {
-        // eslint-disable-next-line prettier/prettier
-        configFunctions.logoutCallback && configFunctions.logoutCallback(props.config.instanceId!);
+        configFunctions.logoutCallback &&
+          configFunctions.logoutCallback(instanceIdRef.current);
       } else if (data.type === 'reply-success') {
         configFunctions.onReplySuccess &&
           configFunctions.onReplySuccess(data.comment);
@@ -149,15 +167,14 @@ export function FastCommentsEmbedCore(
         configFunctions.onCommentsRendered &&
           configFunctions.onCommentsRendered(data.comments);
       } else if (data.type === 'open-profile') {
-        // TODO add onOpenProfile to config
-        if ((configFunctions as any).onOpenProfile) {
-          if ((configFunctions as any).onOpenProfile(data.userId) && webview) {
+        if (configFunctions.onOpenProfile) {
+          if (configFunctions.onOpenProfile(data.userId) && webview) {
             const js = `
                       (function () {
                           window.dispatchEvent(new MessageEvent('message', {
                               data: '${JSON.stringify({
                                 type: 'profile-loaded',
-                                instanceId: props.config.instanceId,
+                                instanceId: instanceIdRef.current,
                               })}'
                           }));
                       })();
@@ -181,11 +198,8 @@ export function FastCommentsEmbedCore(
         'FastComments Error: A "urlId" is required! This should be a "urlId" property on the config object, that points to a bucket where comments will be stored and render from.'
       );
     }
-    if (!config.instanceId) {
-      (config as any).instanceId = Math.random() + '.' + Date.now();
-    }
-
     const deRefConfig = JSON.parse(JSON.stringify(config)); // un-freeze and de-ref
+    deRefConfig.instanceId = instanceIdRef.current;
 
     for (const key in deRefConfig) {
       if (typeof (deRefConfig as any)[key] === 'function') {
@@ -228,7 +242,10 @@ export function FastCommentsEmbedCore(
       }}
       style={{ height, backgroundColor: props.backgroundColor }}
       startInLoadingState={true}
-      renderLoading={() => <ActivityIndicator size="small" />}
+      renderLoading={
+        props.renderLoading ?? (() => <ActivityIndicator size="small" />)
+      }
+      renderError={props.renderError}
       scalesPageToFit={true}
       source={{ uri }}
       domStorageEnabled={true}

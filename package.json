@@ -1,6 +1,6 @@
 {
   "name": "fastcomments-react-native",
-  "version": "4.1.4",
+  "version": "4.2.0",
   "description": "React Native FastComments Components",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -28,6 +28,7 @@
     "prepare": "bob build",
     "release": "release-it",
     "pods": "cd example && pod-install --quiet",
+    "example": "yarn --cwd example",
     "bootstrap": "yarn example && yarn && yarn pods"
   },
   "keywords": [
@@ -50,7 +51,6 @@
     "@react-native-community/eslint-config": "^3.0.3",
     "@release-it/conventional-changelog": "^2.0.0",
     "@types/jest": "^26.0.0",
-    "@types/lodash": "^4.17.7",
     "@types/react": "^17.0.37",
     "@types/react-native": "0.68.20",
     "commitlint": "^11.0.0",
@@ -69,9 +69,7 @@
     "typescript": "^5.7.3",
     "react-native-webview": "13.6.4"
   },
-  "dependencies": {
-    "lodash": "^4.17.7"
-  },
+  "dependencies": {},
   "peerDependencies": {
     "fastcomments-typescript": "*",
     "react": "*",

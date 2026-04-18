@@ -1,11 +1,13 @@
 import * as React from 'react';
 
 import { FastCommentsCommentWidget } from '../../src/index';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FastCommentsCommentWidgetConfig } from 'fastcomments-typescript';
 import { ScrollView, StyleSheet, Text } from 'react-native';
+import { useTheme } from './ShowcaseApp';
 
 export default function CallbacksExampleApp() {
+  const { isDark } = useTheme();
   const myTenantId = 'demo'; // Your tenant id. Can be fetched from https://fastcomments.com/auth/my-account/api-secret
   const myAppPageId = 'native-test'; // the ID or URL of the comment thread in your app.
 
@@ -20,9 +22,10 @@ export default function CallbacksExampleApp() {
     setCallbacksCalled([...callbacksCalled]);
   }
 
-  const [config] = useState<FastCommentsCommentWidgetConfig>({
+  const [config, setConfig] = useState<FastCommentsCommentWidgetConfig>({
     tenantId: myTenantId,
     urlId: myAppPageId,
+    hasDarkBackground: isDark,
     onInit: () => {
       setCalled('onInit');
     },
@@ -69,16 +72,9 @@ export default function CallbacksExampleApp() {
     }
   });
 
-  // Uncomment this to test changing pages without reloading the whole widget.
-  // We could use this to change the logged in user, as well.
-  // useEffect(() => {
-  //   setTimeout(function () {
-  //     setConfig({
-  //       ...config,
-  //       urlId: 'new-page-id'
-  //     });
-  //   }, 2000);
-  // }, []);
+  useEffect(() => {
+    setConfig((prev) => ({ ...prev, hasDarkBackground: isDark }));
+  }, [isDark]);
 
   return (
     <ScrollView style={styles.container}>
