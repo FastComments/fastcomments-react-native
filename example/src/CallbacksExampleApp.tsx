@@ -78,8 +78,8 @@ export default function CallbacksExampleApp() {
 
   return (
     <ScrollView style={styles.container}>
-      {callbacksCalled.map((value) => (
-        <Text>{value}</Text>
+      {callbacksCalled.map((value, i) => (
+        <Text key={i}>{value}</Text>
       ))}
       <FastCommentsCommentWidget config={config} />
     </ScrollView>

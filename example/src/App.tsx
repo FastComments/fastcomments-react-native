@@ -1,15 +1,20 @@
 import * as React from 'react';
 
 import { FastCommentsCommentWidget } from '../../src/index';
-import { View, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { useTheme } from './ShowcaseApp';
+
+const DARK_BG = '#0b0b0b';
+const LIGHT_BG = '#ffffff';
 
 export default function App() {
   const { isDark } = useTheme();
   const FAST_COMMENTS_TENANT_ID = 'demo';
   const urlId = 'native-test';
   const url = 'https://example.com/external-page';
-  const now = Date.now();
+  // Keep the timestamp stable across renders so the widget key only changes on
+  // theme toggle, not on every render.
+  const timestampRef = React.useRef(Date.now());
 
   // Simulate postData from customer's app
   const postData = {
@@ -17,7 +22,7 @@ export default function App() {
   };
 
   const ssoConfig = {
-    timestamp: now,
+    timestamp: timestampRef.current,
   };
 
   const widgetConfig = () => {
@@ -43,19 +48,25 @@ export default function App() {
   const widgetKey = `${urlId}::${ssoConfig.timestamp}::${isDark ? 'd' : 'l'}`;
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={[styles.container, { backgroundColor: isDark ? DARK_BG : LIGHT_BG }]}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+    >
       <FastCommentsCommentWidget
         key={widgetKey}
         config={widgetConfig()}
-        backgroundColor="transparent"
+        backgroundColor={isDark ? DARK_BG : 'transparent'}
       />
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+  },
+  content: {
+    flexGrow: 1,
   },
 });
