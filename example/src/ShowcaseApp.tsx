@@ -27,7 +27,7 @@ type ExampleMeta = {
 
 const EXAMPLES: ExampleMeta[] = [
   { key: 'basic', label: 'Live Comment Widget', kind: 'widget', blurb: 'The flagship live commenting widget. Replies, voting, moderation.', Component: App },
-  { key: 'callbacks', label: 'Event Callbacks', kind: 'flow', blurb: 'Every lifecycle and action event mirrored in a live log.', Component: CallbacksExampleApp },
+  { key: 'callbacks', label: 'Event Callbacks', kind: 'config demo', blurb: 'Every lifecycle and action event mirrored in a live log.', Component: CallbacksExampleApp },
 ];
 
 let userOverride: Theme | null = null;
@@ -101,6 +101,7 @@ export default function ShowcaseApp() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
+          style={styles.tabBar}
           contentContainerStyle={styles.tabRow}
         >
           {EXAMPLES.map((e) => {
@@ -219,10 +220,15 @@ const styles = StyleSheet.create({
   themeBtnTextActive: {
     color: '#ffffff',
   },
+  tabBar: {
+    flexGrow: 0,
+    flexShrink: 0,
+  },
   tabRow: {
     paddingHorizontal: 16,
     paddingVertical: 14,
     gap: 10,
+    alignItems: 'flex-start',
   },
   tab: {
     paddingHorizontal: 14,

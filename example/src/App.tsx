@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { FastCommentsCommentWidget } from '../../src/index';
-import { View, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { useTheme } from './ShowcaseApp';
 
 export default function App() {
@@ -43,13 +43,17 @@ export default function App() {
   const widgetKey = `${urlId}::${ssoConfig.timestamp}::${isDark ? 'd' : 'l'}`;
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+    >
       <FastCommentsCommentWidget
         key={widgetKey}
         config={widgetConfig()}
         backgroundColor="transparent"
       />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -57,5 +61,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  content: {
+    flexGrow: 1,
   },
 });
