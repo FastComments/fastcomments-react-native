@@ -53,6 +53,7 @@
     "@types/jest": "^26.0.0",
     "@types/react": "^17.0.37",
     "@types/react-native": "0.68.20",
+    "@types/react-test-renderer": "17.0.2",
     "commitlint": "^11.0.0",
     "eslint": "^7.2.0",
     "eslint-config-prettier": "^7.0.0",
@@ -65,9 +66,10 @@
     "react": "17.0.2",
     "react-native": "0.68.7",
     "react-native-builder-bob": "^0.18.2",
+    "react-native-webview": "13.6.4",
+    "react-test-renderer": "17.0.2",
     "release-it": "^14.2.2",
-    "typescript": "^5.7.3",
-    "react-native-webview": "13.6.4"
+    "typescript": "^5.7.3"
   },
   "dependencies": {},
   "peerDependencies": {
