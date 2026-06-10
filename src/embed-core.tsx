@@ -19,6 +19,14 @@ export interface FastCommentsWidgetParameters {
   onError?: (error: WebViewErrorEvent) => void;
   openURL?: (url: string) => boolean;
   showsVerticalScrollIndicator?: boolean;
+  /**
+   * On Android, when true the widget claims vertical drag gestures for its
+   * internal scrolling, which prevents a parent ScrollView/FlatList from
+   * scrolling. Leave false (the default) for auto-height widgets embedded in
+   * a scrollable screen; only enable for fixed-height widgets that need to
+   * scroll internally.
+   */
+  nestedScrollEnabled?: boolean;
   renderLoading?: () => ReactElement;
   renderError?: (
     errorDomain: string | undefined,
@@ -246,7 +254,7 @@ export function FastCommentsEmbedCore(
       source={{ uri }}
       domStorageEnabled={true}
       javaScriptEnabled={true}
-      nestedScrollEnabled={true}
+      nestedScrollEnabled={props.nestedScrollEnabled ?? false}
       overScrollMode="never"
       showsVerticalScrollIndicator={props.showsVerticalScrollIndicator}
       onMessage={(event) => eventHandler(event)}
