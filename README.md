@@ -4,6 +4,18 @@ FastComments React Native Wrapper
 
 > **Heads up:** this library renders the FastComments web widget inside a WebView (an iframe on web). It is the quickest way to get every FastComments feature, and it inherits web fixes automatically. For the best experience we recommend [**fastcomments-react-native-sdk**](https://github.com/FastComments/fastcomments-react-native-sdk), a fully native implementation: real React Native components instead of a WebView, full theming via design tokens, a live chat widget, and web support. Use this wrapper if you specifically want the WebView-based widget; otherwise prefer the native SDK.
 
+## AI coding agents
+
+[![skills.sh](https://skills.sh/b/fastcomments/skills)](https://skills.sh/fastcomments/skills)
+
+Give your coding agent the FastComments context it needs - widgets, configuration, Secure SSO, the REST API, and the SDKs:
+
+```bash
+npx skills add fastcomments/skills
+```
+
+Works with Claude Code, Codex, Cursor, Copilot, Gemini, and every other agent the [skills CLI](https://github.com/vercel-labs/skills) supports.
+
 ## Live Showcase
 
 To see every widget and flow running locally against the public `demo` tenant, clone the repo and run:
